@@ -1,10 +1,25 @@
 ---
-title: "About me"
+title: "About Me"
 output: 
   html_document:
     toc: FALSE
 ---
 
+### Biography
+My name is Ryan Grunert, I am a M.S. student in the Comparative Biomedical Sciences program through the College of Veterinary Medicine at UGA with an emphasis in Population Health. I completed my bachelor's degree in Fisheries and Wildlife at UGA as well.
+I am a research assistant at the Southeastern Cooperative Wildlife Disease Study (SCWDS), and have assisted with research studies on multiple wildlife diseases. Currently, my research focuses on the epidemiology and population genetics of mange, primarily in American black bears, but including other mammals as well.
+My interests include the biology and epidemiology of infectious diseases, spillover of zoonotic diseases, and the implications both of these have on human and animal population health.
 
-Add some text and a figure describing myself.
+#### Interesting Fact
+I just started learning Archery in my spare time.
+
+### Previous Data Analysis Experience
+Currently, I have an intermediate knowledge of R programming. I have experience using SAS, STATA, SQL, and Tableau as well. I am confident in running basic statistical analyses and data manipulation in R, and I'm interested in learning more advanced statistical analyses, and becoming proficient in writing full scripts.
+
+#### Photo
+![Ryan](/Users/ryangrunert/Desktop/Fall2021_Classes/MADA/RyanGrunert-MADA-portfolio/Ryan_Grunert.jpg)
+
+
+
+
 
