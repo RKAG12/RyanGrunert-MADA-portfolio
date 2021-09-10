@@ -5,6 +5,7 @@ output:
     toc: FALSE
 ---
 ### Loading and Checking Data Section
+<<<<<<< HEAD
 
 ```{r}
 #Loads the "dslabs" and "tidyverse" packages
@@ -184,5 +185,126 @@ summary(fit4)
 tidy(fit3)
 tidy(fit3)
 ```
+=======
+
+```{r}
+#Loads the "dslabs" and "tidyverse" packages
+library(dslabs)
+library(tidyverse)
+
+#Pulls up the help page for the gapminder data
+help(gapminder)
+#Pulls up the structure for the gapminder data
+str(gapminder)
+#Summary of the gapminder data
+summary(gapminder)
+#Determines the type of object that gapminder is
+class(gapminder)
+
+```
+
+### Processing Data Section
+
+```{r}
+#using the gapminder data to create a new object that contains only the African countries
+africadata <- subset(gapminder, continent == "Africa")
+
+#Creating a new object with africadata that only contains infant_mortality and life_expectancy
+africaIMLE <- select(africadata, infant_mortality, life_expectancy)
+
+#Creating a new object with africadata that only contains population and life_expectancy
+africaPLE <- select(africadata, population, life_expectancy)
+
+```
+
+### Plotting Section
+
+```{r}
+#Plotting life expectancy as a function of infant mortality using the africaIMLE dataframe
+ggplot(africaIMLE, aes(x = infant_mortality, y = life_expectancy)) +
+      geom_point() +
+      xlab("Infant Mortality") +
+      ylab("Life Expectancy")
+#A negative correlation shows between the two
+
+
+
+#Plotting life expectancy as a function of population on a log scale using the africaPLE dataframe
+ggplot(africaPLE, aes(x = log(population), y = life_expectancy)) +
+      geom_point() +
+      xlab("Population (Logarithmic Scale)") +
+      ylab("Life Expectancy")
+#Streaks of positively-correlated data appear on this graph
+
+```
+
+### More Data Processing Section
+
+The reason for the second graph's streaks of data is because there is also different years shown in the dataset for each country. Over time, population size increases as well as life expectancy.
+
+```{r}
+#Code to figure out which years have missing data for infant mortality in the africadata dataset
+africaYIM <- select(africadata, year, infant_mortality)
+#This creates a new data frame that only contains the year data and infant mortality data
+
+is.IMna <- africaYIM[rowSums(is.na(africaYIM)) > 0, ]
+#This creates a new data frame that only contains the year data with NA values for infant mortality
+
+
+years_with_NA <- unique(is.IMna)
+#This creates a new data frame that contains the years that have NA infant mortality data
+
+years_with_NA
+```
+
+Based on this output, we can see that for years up to 1981 and then for 2016, there is missing infant mortality data. Next we will extract all the data for only the year 2000 from the africadata object.
+
+```{r}
+africa2000 <- filter(africadata, year == "2000")
+str(africa2000)
+```
+
+### More Plotting Section
+
+This section will graph the same correlations as above, but only for the year 2000.
+
+```{r}
+#This graphs life expectancy as a function of infant mortality for the year 2000 in Africa.
+ggplot(africa2000, aes(x = infant_mortality, y = life_expectancy)) +
+      geom_point() +
+      xlab("Infant Mortality") +
+      ylab("Life Expectancy")
+#There is a negative correlation between the two.
+
+#This graphs life expectancy as a function of population for the year 2000 in Africa.
+ggplot(africa2000, aes(x = log(population), y = life_expectancy)) +
+      geom_point() +
+      xlab("Population (Logarithmic Scale)") +
+      ylab("Life Expectancy")
+#There is no noticable correlation.
+
+```
+
+### A Simple Fit Section
+```{r}
+#Fitting a linear model to the 2000 Africa data, with life expectancy as the outcome and infant mortality as the predictor
+
+fit1 <- lm(life_expectancy ~ infant_mortality, data = africa2000)
+summary(fit1)
+```
+
+Based on the p-value, we can conclude that infant mortality had a statistically significant effect on life expectancy in Africa during the year 2000.
+
+```{r}
+#Adding a linear model to the 2000 Africa data, with life expectancy as the outcome and population as the predictor
+
+fit2 <- lm(life_expectancy ~ population, data = africa2000)
+summary(fit2)
+```
+
+Based on the p-value, we can conclude that population did not have a statistically significant effect on life expectancy in Africa during the year 2000.
+
+
+>>>>>>> main
 
 
