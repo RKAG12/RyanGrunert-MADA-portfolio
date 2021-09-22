@@ -5,6 +5,71 @@ output:
     toc: FALSE
 ---
 
-This will contain the future visualization exercise.
+https://projects.fivethirtyeight.com/college-fight-song-lyrics/
+This project is to recreate the fight song analysis graph from this article, focusing on UGA.
+
+```{r}
+#Loading required packages
+library(tidyverse)
+library(here)
+library(ggthemes)
+library(scales)
+```
+
+
+```{r}
+#Inputting the data into R
+data_location <- here::here("data", "fight-songs", "fight-songs.csv")
+
+fightsongsdf <- read.csv(data_location)
+
+str(fightsongsdf)
+```
+
+
+```{r}
+#Creating the base scatterplot with formatted axes
+ggplot(fightsongsdf) + 
+  theme_fivethirtyeight() +
+  scale_color_fivethirtyeight() +
+      geom_point(aes(x = sec_duration, y = bpm)) +
+      geom_hline(yintercept = mean(fightsongsdf$bpm), linetype = "dashed") +
+      geom_vline(xintercept = mean(fightsongsdf$sec_duration), linetype = "dashed") +
+      theme(plot.title = element_text(family = "Arial", face = "bold"),
+                axis.text.x = element_text(family = "mono", color = "#A9A9A9"),
+                axis.text.y = element_text(family = "mono", color = "#A9A9A9"),
+                axis.title.x = element_text(face = "bold"),
+                axis.title.y = element_text(face = "bold")) +
+         ggtitle("How Georgia's fight song stacks up") +
+         xlab("Duration") +
+            scale_x_continuous(breaks = breaks_width(20, offset = 20), limits = c(0, 180)) +
+         ylab("Beats per minute") +
+            scale_y_continuous(breaks = breaks_width(20, offset = 20), limits = c(60, 200)) 
+      
+
+
+#seq(40, 200, 20)
+#seq(60, 200, 20)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

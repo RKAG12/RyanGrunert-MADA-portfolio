@@ -136,7 +136,7 @@ library(broom)
 #Create an object that only contains data from China
 
 ```{r}
-chinaadata <- subset(gapminder, country == "China")
+chinadata <- subset(gapminder, country == "China")
 ```
 
 #Creating new data framed with our selected variables
