@@ -196,8 +196,8 @@ ggplot(fightsongsdf) +
         theme(plot.title = element_text(hjust = 1, family = "Arial", face = "bold"),
               axis.text.x = element_text(family = "mono", color = "#A9A9A9"),
               axis.text.y = element_text(family = "mono", color = "#A9A9A9"),
-              axis.title.x = element_text(face = "bold"),
-              axis.title.y = element_text(face = "bold")) +
+              axis.title.x = element_text(face = "bold", size = "17"),
+              axis.title.y = element_text(face = "bold", size = "17")) +
         
         ggtitle("How Georgia's fight song stacks up") +
         
