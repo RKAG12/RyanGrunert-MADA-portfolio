@@ -4,6 +4,89 @@ output:
   html_document:
     toc: FALSE
 ---
+### Loading required packages
+```{r}
+library(tidytuesdayR)
+library(tidyverse)
+library(nberwp)
+```
 
-This will contain the future Tidy Tuesday exercise.
+
+
+### Loading the data
+```{r}
+#tuesdata <- tidytuesdayR::tt_load('2021-09-28')
+
+papers <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/papers.csv')
+authors <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/authors.csv')
+programs <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/programs.csv')
+paper_authors <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/paper_authors.csv')
+paper_programs <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/paper_programs.csv')
+
+
+```
+
+
+### Cleaning and Combining the Datasets
+First we have to join all 5 data frames together, and we can do that by using left_join. Each dataframe has a key column that matches with another dataframe, and we can use that to join them all together.
+```{r}
+CombinedFrame <- left_join(papers, paper_authors) %>%
+                  left_join(authors) %>%
+                  left_join(paper_programs) %>%
+                  left_join(programs)
+str(CombinedFrame)
+```
+
+It's also mentioned that the first letter of each paper's ID number in the first column states whether it is historical (h), technical (t) or general (w). We need to create another column telling us that information
+
+```{r}
+CombinedFrame$catalogue_group <- substr(CombinedFrame$paper, 1, 1)
+
+CombinedFrame$catalogue_group[CombinedFrame$catalogue_group == "w"] <- "General"
+CombinedFrame$catalogue_group[CombinedFrame$catalogue_group == "h"] <- "Historical"
+CombinedFrame$catalogue_group[CombinedFrame$catalogue_group == "t"] <- "Technical"
+
+str(CombinedFrame)
+```
+
+
+### Exploratory Data Analysis
+
+Here we'll look at the distribution of the number of papers in each catalogue group
+```{r}
+ggplot(CombinedFrame) +
+    geom_bar(aes(x = catalogue_group))
+
+```
+
+There is considerably more papers in the general group than the historical or technical group.
+
+
+Here we'll look at the distribution of the number of papers in each year by their catalogue group.
+```{r}
+ggplot(CombinedFrame) +
+      geom_bar(aes(x = year,fill = catalogue_group, alpha = catalogue_group)) +
+      scale_alpha_manual(values = c(0.3, 1, 1)) +
+      ggtitle("Number of Papers Per Year by Catalogue Group") +
+      xlab("Year") +
+          scale_x_continuous(labels = unique(CombinedFrame$year),breaks=unique(CombinedFrame$year)) +
+      ylab("Number of Papers") +
+      theme(axis.text.x = element_text(angle = 90))
+
+```
+
+As you can see from this graph, the overall number of papers has increased dramatically over time, especially in 2020. The number of General papers dwarfs the numbers of Historical and Technical papers. However, from 1978-2007, a small number of Technical papers were being released along with a small number of Historical papers in the 1990s. As soon as 2007 hit, the number of Historical and Technical papers being released dropped to 0 and all the papers released afterwards were considered General papers. 
+
+
+
+
+
+
+
+
+
+
+
+
+
 
