@@ -373,12 +373,17 @@ $(document).ready(function () {
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidytuesdayR)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nberwp)</span></code></pre></div>
+<pre><code>## 
+## Attaching package: &#39;nberwp&#39;</code></pre>
+<pre><code>## The following objects are masked _by_ &#39;.GlobalEnv&#39;:
+## 
+##     authors, paper_authors, paper_programs, papers, programs</code></pre>
 </div>
 <div id="loading-the-data" class="section level3">
 <h3>Loading the data</h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#tuesdata &lt;- tidytuesdayR::tt_load(&#39;2021-09-28&#39;)</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>papers <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/papers.csv&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#tuesdata &lt;- tidytuesdayR::tt_load(&#39;2021-09-28&#39;)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>papers <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/papers.csv&#39;</span>)</span></code></pre></div>
 <pre><code>## Rows: 29434 Columns: 4</code></pre>
 <pre><code>## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
@@ -387,7 +392,7 @@ $(document).ready(function () {
 <pre><code>## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>authors <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/authors.csv&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>authors <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/authors.csv&#39;</span>)</span></code></pre></div>
 <pre><code>## Rows: 15437 Columns: 4</code></pre>
 <pre><code>## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
@@ -395,7 +400,7 @@ $(document).ready(function () {
 <pre><code>## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>programs <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/programs.csv&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>programs <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/programs.csv&#39;</span>)</span></code></pre></div>
 <pre><code>## Rows: 21 Columns: 3</code></pre>
 <pre><code>## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
@@ -403,7 +408,7 @@ $(document).ready(function () {
 <pre><code>## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>paper_authors <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/paper_authors.csv&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>paper_authors <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/paper_authors.csv&#39;</span>)</span></code></pre></div>
 <pre><code>## Rows: 67090 Columns: 2</code></pre>
 <pre><code>## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
@@ -411,7 +416,7 @@ $(document).ready(function () {
 <pre><code>## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>paper_programs <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/paper_programs.csv&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>paper_programs <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/paper_programs.csv&#39;</span>)</span></code></pre></div>
 <pre><code>## Rows: 53996 Columns: 2</code></pre>
 <pre><code>## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
@@ -423,15 +428,15 @@ $(document).ready(function () {
 <div id="cleaning-and-combining-the-datasets" class="section level3">
 <h3>Cleaning and Combining the Datasets</h3>
 <p>First we have to join all 5 data frames together, and we can do that by using left_join. Each dataframe has a key column that matches with another dataframe, and we can use that to join them all together.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>CombinedFrame <span class="ot">&lt;-</span> <span class="fu">left_join</span>(papers, paper_authors) <span class="sc">%&gt;%</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">left_join</span>(authors) <span class="sc">%&gt;%</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">left_join</span>(paper_programs) <span class="sc">%&gt;%</span></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">left_join</span>(programs)</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>CombinedFrame <span class="ot">&lt;-</span> <span class="fu">left_join</span>(papers, paper_authors) <span class="sc">%&gt;%</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">left_join</span>(authors) <span class="sc">%&gt;%</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">left_join</span>(paper_programs) <span class="sc">%&gt;%</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">left_join</span>(programs)</span></code></pre></div>
 <pre><code>## Joining, by = &quot;paper&quot;</code></pre>
 <pre><code>## Joining, by = &quot;author&quot;</code></pre>
 <pre><code>## Joining, by = &quot;paper&quot;</code></pre>
 <pre><code>## Joining, by = &quot;program&quot;</code></pre>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(CombinedFrame)</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(CombinedFrame)</span></code></pre></div>
 <pre><code>## spec_tbl_df [130,081 × 11] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
 ##  $ paper           : chr [1:130081] &quot;w0001&quot; &quot;w0002&quot; &quot;w0003&quot; &quot;w0004&quot; ...
 ##  $ year            : num [1:130081] 1973 1973 1973 1973 1973 ...
@@ -453,13 +458,13 @@ $(document).ready(function () {
 ##   .. )
 ##  - attr(*, &quot;problems&quot;)=&lt;externalptr&gt;</code></pre>
 <p>It’s also mentioned that the first letter of each paper’s ID number in the first column states whether it is historical (h), technical (t) or general (w). We need to create another column telling us that information</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>CombinedFrame<span class="sc">$</span>catalogue_group <span class="ot">&lt;-</span> <span class="fu">substr</span>(CombinedFrame<span class="sc">$</span>paper, <span class="dv">1</span>, <span class="dv">1</span>)</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>CombinedFrame<span class="sc">$</span>catalogue_group[CombinedFrame<span class="sc">$</span>catalogue_group <span class="sc">==</span> <span class="st">&quot;w&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;General&quot;</span></span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>CombinedFrame<span class="sc">$</span>catalogue_group[CombinedFrame<span class="sc">$</span>catalogue_group <span class="sc">==</span> <span class="st">&quot;h&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Historical&quot;</span></span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>CombinedFrame<span class="sc">$</span>catalogue_group[CombinedFrame<span class="sc">$</span>catalogue_group <span class="sc">==</span> <span class="st">&quot;t&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Technical&quot;</span></span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(CombinedFrame)</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>CombinedFrame<span class="sc">$</span>Catalogue <span class="ot">&lt;-</span> <span class="fu">substr</span>(CombinedFrame<span class="sc">$</span>paper, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>CombinedFrame<span class="sc">$</span>Catalogue[CombinedFrame<span class="sc">$</span>Catalogue <span class="sc">==</span> <span class="st">&quot;w&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;General&quot;</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>CombinedFrame<span class="sc">$</span>Catalogue[CombinedFrame<span class="sc">$</span>Catalogue <span class="sc">==</span> <span class="st">&quot;h&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Historical&quot;</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>CombinedFrame<span class="sc">$</span>Catalogue[CombinedFrame<span class="sc">$</span>Catalogue <span class="sc">==</span> <span class="st">&quot;t&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Technical&quot;</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(CombinedFrame)</span></code></pre></div>
 <pre><code>## spec_tbl_df [130,081 × 12] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
 ##  $ paper           : chr [1:130081] &quot;w0001&quot; &quot;w0002&quot; &quot;w0003&quot; &quot;w0004&quot; ...
 ##  $ year            : num [1:130081] 1973 1973 1973 1973 1973 ...
@@ -472,7 +477,7 @@ $(document).ready(function () {
 ##  $ program         : chr [1:130081] NA NA NA NA ...
 ##  $ program_desc    : chr [1:130081] NA NA NA NA ...
 ##  $ program_category: chr [1:130081] NA NA NA NA ...
-##  $ catalogue_group : chr [1:130081] &quot;General&quot; &quot;General&quot; &quot;General&quot; &quot;General&quot; ...
+##  $ Catalogue       : chr [1:130081] &quot;General&quot; &quot;General&quot; &quot;General&quot; &quot;General&quot; ...
 ##  - attr(*, &quot;spec&quot;)=
 ##   .. cols(
 ##   ..   paper = col_character(),
@@ -485,19 +490,20 @@ $(document).ready(function () {
 <div id="exploratory-data-analysis" class="section level3">
 <h3>Exploratory Data Analysis</h3>
 <p>Here we’ll look at the distribution of the number of papers in each catalogue group</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(CombinedFrame) <span class="sc">+</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> catalogue_group))</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(CombinedFrame) <span class="sc">+</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> Catalogue))</span></code></pre></div>
 <p><img src="tidytuesday_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<p>There is considerably more papers in the general group than the historical or technical group.</p>
+<p>There are considerably more papers in the general group than the historical or technical group.</p>
 <p>Here we’ll look at the distribution of the number of papers in each year by their catalogue group.</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(CombinedFrame) <span class="sc">+</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> year,<span class="at">fill =</span> catalogue_group, <span class="at">alpha =</span> catalogue_group)) <span class="sc">+</span></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>      <span class="fu">scale_alpha_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="dv">1</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ggtitle</span>(<span class="st">&quot;Number of Papers Per Year by Catalogue Group&quot;</span>) <span class="sc">+</span></span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">xlab</span>(<span class="st">&quot;Year&quot;</span>) <span class="sc">+</span></span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>          <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="fu">unique</span>(CombinedFrame<span class="sc">$</span>year),<span class="at">breaks=</span><span class="fu">unique</span>(CombinedFrame<span class="sc">$</span>year)) <span class="sc">+</span></span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ylab</span>(<span class="st">&quot;Number of Papers&quot;</span>) <span class="sc">+</span></span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(CombinedFrame) <span class="sc">+</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> year,<span class="at">fill =</span> Catalogue, <span class="at">alpha =</span> Catalogue)) <span class="sc">+</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>      <span class="fu">scale_alpha_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="dv">1</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ggtitle</span>(<span class="st">&quot;Number of Papers Per Year by Catalogue Group&quot;</span>) <span class="sc">+</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">xlab</span>(<span class="st">&quot;Year&quot;</span>) <span class="sc">+</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>          <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="fu">unique</span>(CombinedFrame<span class="sc">$</span>year),<span class="at">breaks=</span><span class="fu">unique</span>(CombinedFrame<span class="sc">$</span>year)) <span class="sc">+</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ylab</span>(<span class="st">&quot;Number of Papers&quot;</span>) <span class="sc">+</span></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>),</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span></code></pre></div>
 <p><img src="tidytuesday_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>As you can see from this graph, the overall number of papers has increased dramatically over time, especially in 2020. The number of General papers dwarfs the numbers of Historical and Technical papers. However, from 1978-2007, a small number of Technical papers were being released along with a small number of Historical papers in the 1990s. As soon as 2007 hit, the number of Historical and Technical papers being released dropped to 0 and all the papers released afterwards were considered General papers.</p>
 </div>

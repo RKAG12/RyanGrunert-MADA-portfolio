@@ -40,11 +40,11 @@ str(CombinedFrame)
 It's also mentioned that the first letter of each paper's ID number in the first column states whether it is historical (h), technical (t) or general (w). We need to create another column telling us that information
 
 ```{r}
-CombinedFrame$catalogue_group <- substr(CombinedFrame$paper, 1, 1)
+CombinedFrame$Catalogue <- substr(CombinedFrame$paper, 1, 1)
 
-CombinedFrame$catalogue_group[CombinedFrame$catalogue_group == "w"] <- "General"
-CombinedFrame$catalogue_group[CombinedFrame$catalogue_group == "h"] <- "Historical"
-CombinedFrame$catalogue_group[CombinedFrame$catalogue_group == "t"] <- "Technical"
+CombinedFrame$Catalogue[CombinedFrame$Catalogue == "w"] <- "General"
+CombinedFrame$Catalogue[CombinedFrame$Catalogue == "h"] <- "Historical"
+CombinedFrame$Catalogue[CombinedFrame$Catalogue == "t"] <- "Technical"
 
 str(CombinedFrame)
 ```
@@ -55,23 +55,24 @@ str(CombinedFrame)
 Here we'll look at the distribution of the number of papers in each catalogue group
 ```{r}
 ggplot(CombinedFrame) +
-    geom_bar(aes(x = catalogue_group))
+    geom_bar(aes(x = Catalogue))
 
 ```
 
-There is considerably more papers in the general group than the historical or technical group.
+There are considerably more papers in the general group than the historical or technical group.
 
 
 Here we'll look at the distribution of the number of papers in each year by their catalogue group.
 ```{r}
 ggplot(CombinedFrame) +
-      geom_bar(aes(x = year,fill = catalogue_group, alpha = catalogue_group)) +
+      geom_bar(aes(x = year,fill = Catalogue, alpha = Catalogue)) +
       scale_alpha_manual(values = c(0.3, 1, 1)) +
       ggtitle("Number of Papers Per Year by Catalogue Group") +
       xlab("Year") +
           scale_x_continuous(labels = unique(CombinedFrame$year),breaks=unique(CombinedFrame$year)) +
       ylab("Number of Papers") +
-      theme(axis.text.x = element_text(angle = 90))
+      theme(axis.text.x = element_text(angle = 90),
+            plot.title = element_text(hjust = 0.5))
 
 ```
 
