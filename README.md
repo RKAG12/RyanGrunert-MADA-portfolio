@@ -1,1 +1,1 @@
-# My website and data analysis portfolio
+This is the GitHub repository for my data analysis online portfolio.
