@@ -18,7 +18,11 @@ navbar:
         - text: "Visualization"
           href: ./visualization.html
         - text: "Tidy Tuesday"
-          href: ./tidytuesday.html
+          href: ./tidytuesday_exercise.html
+        - text: "Tidy Tuesday 2"
+          href: ./tidytuesday_exercise2.html
+        - text: "Statistical Analysis 1"
+          href: ./Statistical_Analysis1.html
   right:
     - icon: fa-github fa-lg
-      href: URL-TO-THIS-REPOSITORY-HERE        
+      href: https://github.com/RKAG12/RyanGrunert-MADA-portfolio      

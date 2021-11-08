@@ -13,8 +13,8 @@
 
 <title>Tidy Tuesday</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/darkly.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -342,14 +342,20 @@ $(document).ready(function () {
       <a href="./visualization.html">Visualization</a>
     </li>
     <li>
-      <a href="./tidytuesday.html">Tidy Tuesday</a>
+      <a href="./tidytuesday_exercise.html">Tidy Tuesday</a>
+    </li>
+    <li>
+      <a href="./tidytuesday_exercise2.html">Tidy Tuesday 2</a>
+    </li>
+    <li>
+      <a href="./Statistical_Analysis1.html">Statistical Analysis 1</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="URL-TO-THIS-REPOSITORY-HERE">
+  <a href="https://github.com/RKAG12/RyanGrunert-MADA-portfolio">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -492,7 +498,7 @@ $(document).ready(function () {
 <p>Here we’ll look at the distribution of the number of papers in each catalogue group</p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(CombinedFrame) <span class="sc">+</span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> Catalogue))</span></code></pre></div>
-<p><img src="tidytuesday_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="tidytuesday_exercise_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>There are considerably more papers in the general group than the historical or technical group.</p>
 <p>Here we’ll look at the distribution of the number of papers in each year by their catalogue group.</p>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(CombinedFrame) <span class="sc">+</span></span>
@@ -504,7 +510,7 @@ $(document).ready(function () {
 <span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ylab</span>(<span class="st">&quot;Number of Papers&quot;</span>) <span class="sc">+</span></span>
 <span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>),</span>
 <span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span></code></pre></div>
-<p><img src="tidytuesday_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="tidytuesday_exercise_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>As you can see from this graph, the overall number of papers has increased dramatically over time, especially in 2020. The number of General papers dwarfs the numbers of Historical and Technical papers. However, from 1978-2007, a small number of Technical papers were being released along with a small number of Historical papers in the 1990s. As soon as 2007 hit, the number of Historical and Technical papers being released dropped to 0 and all the papers released afterwards were considered General papers.</p>
 </div>
 
