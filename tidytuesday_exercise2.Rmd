@@ -20,6 +20,7 @@ library(vip)
 library(janitor)
 library(skimr)
 library(lubridate)
+library(kernlab)
 set.seed(100)
 # Loading the data
 marbles <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-06-02/marbles.csv')
@@ -298,6 +299,13 @@ These plots look better than the plots for the decision tree model. The predicte
 
 #### LASSO Model
 
+Now we will use a Least Absolute Shrinkage and Selection Operator model. First we need to convert the date column to a numeric value in order to run the model. 
+```{r}
+#Converting the date column to a numeric value in order for it to run the LASSO model successfully.
+marbles$date <- as.numeric(marbles$date)
+```
+
+Next we will specify, tune, and finally run the model. This next section will also fit the best LASSO model to the training data. 
 ```{r}
 #Specifying the model. We are using a Least Absolute Shrinkage and Selection Operator (LASSO) model, and we'll tune the penalty hyperparameter.
 lasso_spec <- linear_reg(penalty = tune(), mixture = 1) %>% set_engine("glmnet") %>% set_mode("regression")
@@ -323,7 +331,10 @@ lasso_final_wf <- lasso_wf %>% finalize_workflow(lasso_best)
 #Fitting the best LASSO model to the training data
 lasso_final_fit <- lasso_final_wf %>% fit(data = train_data)
 
+lasso_fit %>% autoplot()
 ```
+The best LASSO model had an rmse of 5.408 and a standard error of 0.198. This can be seen from the above regularization plot. This model performed better than either of the last two models, now we'll check the diagnostic plots.
+
 
 ```{r}
 #This gets the predictions and residuals, and saves it into a variable.
@@ -348,9 +359,61 @@ lasso_predresid_plot <- ggplot(lasso_residpredict, aes(x = .pred, y = .resid)) +
 lasso_predobs_plot
 lasso_predresid_plot
 ```
+The predicted vs observed plot is similar to the random forest, with the values aligning along a diagonal, and the residual plot is similar to the random forest as well. These are all good signs for the LASSO model. 
 
+#### Linear Support Vector Machine Model
 
+```{r}
+#First we specify the model. We are using a linear support vector machine model.
+svm_spec <- svm_linear(mode = "regression", engine = "kernlab", cost = tune(), margin = tune())
 
+#Specfiying the tuning grid
+svm_grid <- tibble(penalty = 10^seq(-4, -1, length.out = 30))
+
+svm_wf <- workflow() %>% add_model(svm_spec) %>% add_recipe(ML_rec)
+
+svm_fit <- svm_wf %>% tune_grid(resamples = folds, grid = svm_grid, control = control_grid(save_pred = TRUE), metrics = metric_set(rmse))
+
+#Specifying the model. We are using a Least Absolute Shrinkage and Selection Operator (LASSO) model, and we'll tune the penalty hyperparameter.
+lasso_spec <- linear_reg(penalty = tune(), mixture = 1) %>% set_engine("glmnet") %>% set_mode("regression")
+
+#Specifying the tuning grid
+lasso_grid <- tibble(penalty = 10^seq(-4, -1, length.out = 30))
+
+#Creating the workflow for the LASSO model.
+lasso_wf <- workflow() %>% add_model(lasso_spec) %>% add_recipe(ML_rec)
+
+#Training and tuning the model, tuning the grid and selecting the the RMSE metric. 
+lasso_fit <- lasso_wf %>% tune_grid(
+  resamples = folds, grid = lasso_grid, 
+  control = control_grid(verbose = FALSE, save_pred = TRUE),
+  metrics = metric_set(rmse))
+
+#Here we pick the best performing LASSO model
+lasso_best <- select_best(lasso_fit)
+
+#Finalizing the workflow with the best LASSO model
+lasso_final_wf <- lasso_wf %>% finalize_workflow(lasso_best)
+
+#Fitting the best LASSO model to the training data
+lasso_final_fit <- lasso_final_wf %>% fit(data = train_data)
+
+lasso_fit %>% autoplot()
+```
+```
+
+### Fitting the Best Model to the Test Data
+
+The LASSO model performed the best, so we will fit that model to the testing data.
+
+```{r}
+#Fitting the best model to the test data set
+Test_fit <- lasso_final_wf %>% last_fit(data_split)
+
+collect_metrics(Test_fit)
+```
+
+The final rmse was 5.29 and the r-squared was 0.467. Conclusion will follow soon once SVM model has been finished.
 
 
 
