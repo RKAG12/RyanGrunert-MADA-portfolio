@@ -86,7 +86,7 @@ For both of the null models, the rmse is around 1.21 and there is no r squared b
 The steps (block of code) you should have here are 1) model specification, 2) workflow definition, 3) tune grid specification and 4) tuning using cross-validation and the tune_grid function.
 
 ### Decision Tree Model
-This is creating a decision tree model and specifying the tuning grid for the hyperparameters. The grid gives us 25 possible different possible tuning combinations.
+This is creating a decision tree model and specifying the tuning grid for the hyperparameters. The grid gives us 25  different possible tuning combinations.
 ```{r}
 #Model Specification
 tune_spec <- 
@@ -96,8 +96,6 @@ tune_spec <-
   ) %>% 
   set_engine("rpart") %>% 
   set_mode("regression")
-tune_spec
-
 ```
 
 ```{r}

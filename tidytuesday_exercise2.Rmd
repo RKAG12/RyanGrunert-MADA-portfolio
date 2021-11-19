@@ -1,10 +1,364 @@
 ---
-title: "Tidy Tuesday"
+title: "Tidy Tuesday 2"
 output: 
   html_document:
     toc: FALSE
 ---
-To be filled in next week
+This is the second Tidy Tuesday exercise focusing on marble racing data. First we need to load the required packages and data, then we'll take a quick look at the dataset.
+
+### Loading Required Packages and Data
+```{r}
+#Loading the required packages
+library(tidyverse)
+library(tidymodels)
+library(rsample)
+library(rpart)
+library(rpart.plot)
+library(glmnet)
+library(ranger)
+library(vip)
+library(janitor)
+library(skimr)
+library(lubridate)
+set.seed(100)
+# Loading the data
+marbles <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-06-02/marbles.csv')
+#Taking an initial look at the dataset
+skim(marbles)
+glimpse(marbles)
+```
+
+First, we'll take an initial look at the dataset. There are 9 character columns and 5 numeric columns. There are 32 individual marbles involved in the races, and 16 teams that compete. There are 8 sites the marbles raced each of the 16 races at, 2 races at each site. One of the two races resulted in a pole position, and the other resulted in points gained. The races that resulted in a pole position were 1 lap each, and the races that resulted in points were multiple laps. The pole position was the result of a qualifying race with 1 lap to determine the starting spot for the full race that results in points.
+
+### Data Manipulation and Tidying
+
+There are some columns we can remove for the analysis. The "source" and "notes" columns can be removed. 
+```{r}
+marbles <- marbles %>% subset(select = -c(source, notes))
+#This removes the source and notes column from the intitial dataset
+```
+
+Next, we need to change the values in the character columns to factors, in order to better facilitate the analysis.
+```{r}
+#this changes all of the character data to factors 
+marbles$race <- as.factor(marbles$race)
+marbles$site <- as.factor(marbles$site)
+marbles$marble_name <- as.factor(marbles$marble_name)
+marbles$team_name <- as.factor(marbles$team_name)
+marbles$host <- as.factor(marbles$host)
+marbles$pole <- as.factor(marbles$pole)
+```
+
+Next, we need to convert the date column from character values to date values. We can do this using the dmy function from the lubridate package.
+```{r}
+marbles$date <- dmy(marbles$date) #changes the character values in the date column to factor values using "day-month-year" dmy function from lubridate package.
+```
+
+Lastly for the analysis, we will focus on just the races that score overall points. We'll only extract observations that don't have NA in the points column, and remove the pole column entirely to focus on just the races. We will also omit the marbles that didn't finish a race, there are 3.
+```{r}
+marbles <- marbles[complete.cases(marbles$points),] #This removes all of the NA in the points column
+marbles <- marbles %>% subset(select = -c(pole)) #This removes the pole column
+
+marbles <- na.omit(marbles) #Omits three observations, these are marbles that did not finish the race they were entered in.
+```
+
+
+### Exploratory Data Analysis
+The first question we'll answer is which teams ended up with the highest overall points and what does the distribution of the points earned from each race look like? We can answer this question by creating a bar graph that sums the total points earned by each team and shows the sites where they earned those points.
+```{r}
+#Plotting the summed number of points for each team, and showing where points were won by color.
+ggplot(marbles) +
+  geom_bar(aes(x = team_name, y = points, color = site), stat = "identity") + 
+  ggtitle("Points Earned by Team and Site") + xlab("Team Name") + ylab("Points") + labs(color = "Site") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+        plot.title = element_text(hjust = 0.5))
+```
+As we can see from the graph, Savage Speeders earned the most points, followed by Hazers and O'rangers. A pattern we can see from the graph is that the higher scoring teams earned some amount of  points at most of the sites. However, the top two teams didn't earn any points at Greenstone and O'rangers earned the majority of their points at Greenstone to finish with the third highest amount of points. A clearer pattern would be that the top teams all finished in first place at some point during the racing season.
+
+The second question we'll answer is how well individual marbles scored for their teams by looking at the total points earned.
+```{r}
+#Plotting the summed number of points for each individual marble, showing which team each marble was on as well.
+ggplot(marbles) +
+  geom_bar(aes(x = marble_name, y = points, fill = team_name), stat = "identity") + 
+  ggtitle("Points Earned by Marble") + xlab("Marble Name") + ylab("Points") + labs(fill = "Team Name") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+        plot.title = element_text(hjust = 0.5))
+```
+Looking at the points earned by each marble, the teams that scored the highest have both marbles score consistently high. For example, Savage Speeders' marbles "Speedy" and "Rapidly" both scored above 40 points. The opposite is seen in Snowballs' marbles, where "Snowy" earned the second highest number of points but the other marble "Snowflake" earned one of the lowest amounts of points. This drastic point deficit resulted in Snowballs only earning 4th place if referring the previous graph.
+
+This next graph will look at how long each track is in meters.
+
+```{r}
+#bar graph for how long each track is in meters.
+ggplot(marbles) +
+  geom_bar(aes(x = site, y = track_length_m), stat = "summary", fun = "mean") + 
+  ggtitle("Site Track Lengths") + xlab("Site") + ylab("Track Length (m)") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+        plot.title = element_text(hjust = 0.5))
+```
+The longest track is Greenstone, and the shortest track is Momotorway.
+
+Through this initial exploratory data analysis, I decided I will use the number of points scored as the outcome of interest. The main predictors of interest will be pole position, avg_time_lap, site, marble_name, whether the team hosted the race or not, team_name, time_s, and track_length_m. The question we will answer is whether any of these predictors influence the number of points scored in the racing competition. 
+
+### Analysis and Cross-Validation Setup
+
+#### Cross-Validation Setup
+This section will set up the cross-validation training/test data split, and then setup the machine learning models and null models we will use in the analysis when fitting the data.
+
+First, we will set up the cross-validation data split with an 80/20 ratio and stratifying by the number of points earned. We will also create the cross-validation folds needed on the training data, with 5 folds and 5 repeats, still stratifying by points earned. 
+```{r}
+#Creating the data split that divides the marbles dataset into an 80/20 training/testing data ratio, while stratifying for points earned.
+data_split <- initial_split(marbles, prop = 8/10, strata = points)
+
+#Using the data split to assign the training and testing data to their respective data frames.
+train_data <- training(data_split)
+test_data <- testing(data_split)
+
+#Creating the cross-validation folds on the training data with 5 folds, 5 repeats and stratifying by the number of points earned. 
+folds <- vfold_cv(train_data, v = 5, repeats = 5, strata = points)
+```
+
+#### Null Model Setup and Fitting
+Now that the cross-validation is setup, we can create both of the null models we will use in the analysis to compare our machine learning models to. We will do this by creating a basic linear model for the training data and testing data, the fit them to their respective datasets to get baseline metrics for later comparison.
+
+```{r}
+#This creates the basic linear regression model
+null_lm_mod <- linear_reg() %>% set_engine("lm") %>% set_mode("regression")
+
+#############################Training Data#####################################
+#This creates the recipe for the null model for use on the training data
+null_rec_train <- recipe(points ~ 1, data = train_data)
+
+#This creates the workflow for the null model on the training data.
+null_wf_train <- workflow() %>% add_model(null_lm_mod) %>% add_recipe(null_rec_train)
+
+#This fits the null model to the training data
+null_fit_train <- fit_resamples(null_wf_train, resamples = folds)
+
+#Collecting the metrics from the null training model
+null_metrics_train <- collect_metrics(null_fit_train)
+
+#############################Testing Data#######################################
+#Creating the recipe for the null model for use on the testing data
+null_rec_test <- recipe(points ~ 1, data = test_data)
+
+#Creating the workflow for the null model on the testing data
+null_wf_test <- workflow() %>% add_model(null_lm_mod) %>% add_recipe(null_rec_test)
+
+#Fitting the null model to the testing data
+null_fit_test <- fit_resamples(null_wf_test, resamples = folds)
+
+#Collecting the metrics from the null testing model
+null_metrics_test <- collect_metrics(null_fit_test)
+```
+For both of the null models, the RMSE is 7.56 with a standard error of 0.162.
+
+### Machine Learning Model Tuning and Fitting
+
+The following code will tune and fit 4 different machine learning models to the data set.
+
+Here we will specify the recipe we will use for all the machine learning models
+```{r}
+#Specifying the recipe for all the machine learning models. points and all of the predictors. We create dummy variables for the nominal predictors. 
+ML_rec <- recipe(points ~ ., data = train_data) %>% step_dummy(all_nominal_predictors()) 
+```
+
+#### Decision Tree Model
+
+This is creating a decision tree model and specifying the tuning grid for the hyperparameters. The grid will give us 25 different possible tuning combinations. The following code will fit the decision tree models to the specified workflow, choose the model that has the lowest RMSE value, and then fit that one to the training data as a final fit.
+
+```{r}
+#Specifying the model. We are using a decision tree, tuning the cost_complexity and tree_depth, but specifying the engine and mode for the tree.
+dt_spec <- decision_tree(cost_complexity = tune(), tree_depth = tune()) %>%
+              set_engine("rpart") %>%
+              set_mode("regression")
+
+#Specifying the tuning grid. This will tune the cost complexity and tree depth, with 5 levels.
+dt_grid <- grid_regular(cost_complexity(),
+                          tree_depth(),
+                          levels = 5)
+
+#Creating the workflow for the decision tree to fit the model on the training data.
+dt_wf <- workflow() %>% add_model(dt_spec) %>% add_recipe(ML_rec)
+
+#########RUNNING THE MODEL HERE... WILL TAKE A COUPLE MINUTES/A LITTLE WHILE###################
+#Tuning and fitting the decision tree model
+dt_fit <- dt_wf %>% tune_grid(resamples = folds, grid = dt_grid)
+###############################################################################################
+
+#Saving the model with the best RMSE value
+dt_best <- dt_fit %>% select_best("rmse")
+
+#Finalizing the workflow with the best decision tree model
+dt_final_wf <- dt_wf %>% finalize_workflow(dt_best)
+
+#Fitting the best decision tree model to the training data
+dt_final_fit <- dt_final_wf %>% fit(data = train_data)
+```
+
+We have finished fitting the best decision tree model to the training data, now we will create some diagnostic plots to measure the performance of the model. The best model has an RMSE of 6.87 and standard error of 0.15.
+
+```{r}
+#This plot shows the entire decision tree model workflow, and where the splits occur to narrow down how many points the marbles obtain.
+rpart.plot(extract_fit_parsnip(dt_final_fit)$fit)
+
+#This is the vip plot in order to show the importance of each of the predictor variables in building the model.
+dt_final_fit %>% extract_fit_parsnip() %>% vip()
+dt_fit %>% collect_metrics()
+```
+Looking at the first tree visualization plot, we can see that the best model has a depth of 1. The splits make sense as well, the first looks at how fast the marble completed the race and if the time was under 334 seconds than an average of 11 points was earned. That makes logical sense.
+
+Looking at the variable importance plot, the time it takes for a marble in seconds to finish a race is the most important variable in determining the amount of points earned. The O.raceway site, the S1R2 race, date, and average lap time were the four other important variables for creating the plot.
+
+Next we will look at the predictions and residuals.
+```{r}
+#This gets the predictions and residuals, and saves it into a variable.
+dt_residpredict <- dt_final_fit %>%
+  augment(new_data = train_data) %>%
+  select(.pred, points) %>%
+  mutate(.resid = points - .pred)
+
+#This uses the predictions and residuals to plot the predicted vs observed values
+dt_predobs_plot <- ggplot(dt_residpredict, aes(x = points, y = .pred)) +
+  geom_point() +
+  xlab("Observed Values") + ylab("Predicted Values") +
+  ggtitle("Predicted vs. Observed Values for Decision Tree")
+
+#This uses the variables from earlier to plot for predicted values vs residuals 
+dt_predresid_plot <- ggplot(dt_residpredict, aes(x = .pred, y = .resid)) +
+  geom_hline(yintercept = 0) +
+  geom_point() +
+  xlab("Predicted Values") + ylab("Residuals") +
+  ggtitle("Predicted Values vs Residuals for Decision Tree")
+
+
+dt_predobs_plot
+dt_predresid_plot
+```
+Looking at the predicted vs observed plot, the points are pretty dispersed and don't follow a diagonal line. The r-squared value is low (~0.25) so this is expected in that regard. Looking at the predicted values vs the residuals, the residuals are very dispersed as well. Overall, these plots aren't great, although the tree itself is fairly easy to follow.  
+
+#### Random Forest Model
+
+Next we will create a random forest model. The following section will also specify the tuning grid for the hyperparameters. The grid will give 25 possible combinations, and we will use 1000 trees in the model. The following code will fit the random forest models to the specified workflow, and we will choose the model that has the lowest RMSE value, and fit that one to the training data as a final fit.
+
+```{r}
+#Specifying the model, we are using a random forest, we will tune the number of predictors that will be random sampled at each split, and the minimum number of data pooints in the node that are required to split the node. We also specify the engine and mode.
+rf_spec <- rand_forest(mtry = tune(), min_n = tune(), trees = 1000) %>% set_engine("ranger") %>% set_mode("regression")
+
+#Next we build the workflow for the model
+rf_wf <- workflow() %>% add_model(rf_spec) %>% add_recipe(ML_rec)
+
+##########FITTING THE MODEL... WILL TAKE A WHILE####################################################
+#Now we will tune the model and run it, we will also specify the grid here and which metric to use.
+rf_fit <- rf_wf %>% tune_grid(resamples = folds, grid = 25, control_grid(save_pred = TRUE), metrics = metric_set(rmse))
+###################################################################################################
+
+#Here we pick the best perfoming random forest model
+rf_best <- select_best(rf_fit)
+
+#Finalizing the workflow with the best random forest model
+rf_final_wf <- rf_wf %>% finalize_workflow(rf_best)
+
+#Fitting the best random forest model to the training data
+rf_final_fit <- rf_final_wf %>% fit(data = train_data)
+
+
+```
+
+Now that the model is fit to the training data, we can take a look at some of the diagnostic plots to determine the accuracy of the model. The best model had an RMSE of 6.255 and a standard error of 0.283.
+
+```{r}
+#Here is a plot that shows the distribution of all the different models tested, showing the randomly selected predictors and minimal node size.
+autoplot(rf_fit)
+
+#This gets the predictions and residuals, and saves it into a variable.
+rf_residpredict <- rf_final_fit %>%
+  augment(new_data = train_data) %>%
+  select(.pred, points) %>%
+  mutate(.resid = points - .pred)
+
+#This uses the predictions and residuals to plot the predicted vs observed values
+rf_predobs_plot <- ggplot(rf_residpredict, aes(x = points, y = .pred)) +
+  geom_point() +
+  xlab("Observed Values") + ylab("Predicted Values") +
+  ggtitle("Predicted vs. Observed Values for Decision Tree")
+
+#This uses the variables from earlier to plot for predicted values vs residuals 
+rf_predresid_plot <- ggplot(rf_residpredict, aes(x = .pred, y = .resid)) +
+  geom_hline(yintercept = 0) +
+  geom_point() +
+  xlab("Predicted Values") + ylab("Residuals") +
+  ggtitle("Predicted Values vs Residuals for Decision Tree")
+
+rf_predobs_plot
+rf_predresid_plot
+
+```
+These plots look better than the plots for the decision tree model. The predicted and observed values match a diagonal line, showing that they are similar. The residuals start off more negative and then disperse and turn positive. And we can see the number of randomly selected predictors and minimal node size that match our model with the lowest RMSE. Low minimal node size and around 35 randomly selected predictors.
+
+#### LASSO Model
+
+```{r}
+#Specifying the model. We are using a Least Absolute Shrinkage and Selection Operator (LASSO) model, and we'll tune the penalty hyperparameter.
+lasso_spec <- linear_reg(penalty = tune(), mixture = 1) %>% set_engine("glmnet") %>% set_mode("regression")
+
+#Specifying the tuning grid
+lasso_grid <- tibble(penalty = 10^seq(-3, 0, length.out = 30))
+
+#Creating the workflow for the LASSO model.
+lasso_wf <- workflow() %>% add_model(lasso_spec) %>% add_recipe(ML_rec)
+
+#Training and tuning the model, tuning the grid and selecting the the RMSE metric. 
+lasso_fit <- lasso_wf %>% tune_grid(
+  resamples = folds, grid = lasso_grid, 
+  control = control_grid(save_pred = TRUE),
+  metrics = metric_set(rmse))
+
+#Here we pick the best performing LASSO model
+lasso_best <- select_best(lasso_fit)
+
+#Finalizing the workflow with the best LASSO model
+lasso_final_wf <- lasso_wf %>% finalize_workflow(lasso_best)
+
+#Fitting the best LASSO model to the training data
+lasso_final_fit <- lasso_final_wf %>% fit(data = train_data)
+
+```
+
+```{r}
+#This gets the predictions and residuals, and saves it into a variable.
+lasso_residpredict <- lasso_final_fit %>%
+  augment(new_data = train_data) %>%
+  select(.pred, points) %>%
+  mutate(.resid = points - .pred)
+
+#This uses the predictions and residuals to plot the predicted vs observed values
+lasso_predobs_plot <- ggplot(lasso_residpredict, aes(x = points, y = .pred)) +
+  geom_point() +
+  xlab("Observed Values") + ylab("Predicted Values") +
+  ggtitle("Predicted vs. Observed Values for Decision Tree")
+
+#This uses the variables from earlier to plot for predicted values vs residuals 
+lasso_predresid_plot <- ggplot(lasso_residpredict, aes(x = .pred, y = .resid)) +
+  geom_hline(yintercept = 0) +
+  geom_point() +
+  xlab("Predicted Values") + ylab("Residuals") +
+  ggtitle("Predicted Values vs Residuals for Decision Tree")
+
+lasso_predobs_plot
+lasso_predresid_plot
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
 
