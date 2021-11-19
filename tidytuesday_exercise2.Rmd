@@ -303,7 +303,7 @@ These plots look better than the plots for the decision tree model. The predicte
 lasso_spec <- linear_reg(penalty = tune(), mixture = 1) %>% set_engine("glmnet") %>% set_mode("regression")
 
 #Specifying the tuning grid
-lasso_grid <- tibble(penalty = 10^seq(-3, 0, length.out = 30))
+lasso_grid <- tibble(penalty = 10^seq(-4, -1, length.out = 30))
 
 #Creating the workflow for the LASSO model.
 lasso_wf <- workflow() %>% add_model(lasso_spec) %>% add_recipe(ML_rec)
@@ -311,7 +311,7 @@ lasso_wf <- workflow() %>% add_model(lasso_spec) %>% add_recipe(ML_rec)
 #Training and tuning the model, tuning the grid and selecting the the RMSE metric. 
 lasso_fit <- lasso_wf %>% tune_grid(
   resamples = folds, grid = lasso_grid, 
-  control = control_grid(save_pred = TRUE),
+  control = control_grid(verbose = FALSE, save_pred = TRUE),
   metrics = metric_set(rmse))
 
 #Here we pick the best performing LASSO model
